@@ -2,7 +2,7 @@
 
 A practical Python agent for monitoring public social content, storing timestamped snapshots, and generating one actionable trend insight per run.
 
-This submission is implemented as a Reddit-first MVP with a TikTok collector scaffold for future expansion. That keeps the shipped path reliable while still demonstrating a broader social-monitoring design.
+This project is implemented as a Reddit-first pipeline with a TikTok collector module for future expansion. That keeps the current path reliable while still supporting a broader social-monitoring design.
 
 ## Project objective
 
@@ -17,14 +17,16 @@ This submission is implemented as a Reddit-first MVP with a TikTok collector sca
 
 The design is intentionally simple, reproducible, and n8n-ready.
 
-## Why TikTok was chosen
+## Why Reddit was chosen
 
-TikTok is a strong fit for trend discovery because creator-driven short-form content tends to surface new workflows, products, and public sentiment quickly. In practice, public TikTok extraction is much more brittle than Reddit because rendering and selectors change often, so this repo ships with:
+I chose Reddit as the primary implementation because it provides public, discussion-rich content that is much more reliable to collect and parse for a first version. Subreddit listings and post pages are a good fit for extracting titles, comment signals, sentiment, and recurring themes without relying on login state or fragile private APIs.
 
-- a Reddit implementation that is stable enough for a demo
-- a TikTok collector scaffold that keeps selectors isolated and non-blocking
+TikTok was still relevant to the broader problem, so I kept a Playwright-based collector module in the repo as an extension path. In practice, public TikTok extraction was much less reliable because of anti-scraping protections and frequent selector/rendering changes.
 
-That tradeoff keeps the submission honest: the architecture supports both, but the dependable demo path is Reddit.
+Current implementation notes:
+
+- Reddit is the dependable end-to-end implementation
+- TikTok is included as a future expansion path, not as the primary shipped workflow
 
 ## What is collected
 
@@ -48,7 +50,7 @@ Phase 2 enhancement:
 
 ```text
 TARGET_URLS
-  -> Collector (Reddit today, TikTok scaffold)
+  -> Collector (Reddit, TikTok extension path)
   -> Parser
   -> Optional Transcript Layer
   -> Analyzer (heuristic or LLM)
@@ -60,7 +62,7 @@ TARGET_URLS
 Key modules:
 
 - `src/reddit_collector.py`: public Reddit listing collector with post-detail comment enrichment
-- `src/collector.py`: TikTok Playwright scaffold with centralized selectors
+- `src/collector.py`: TikTok Playwright collector module with centralized selectors
 - `src/parser.py`: platform-agnostic normalization into one processed item shape
 - `src/analyzer.py`: heuristic topic, sentiment, keyword, and signal tag extraction
 - `src/trends.py`: snapshot aggregation and actionable insight generation
@@ -225,10 +227,10 @@ python3 -m pytest -q
 
 ## Limitations
 
-- Reddit is the reliable demo path today; TikTok is still a scaffold rather than a completed extraction path.
+- Reddit is the primary supported path today; TikTok is still an extension path rather than a completed extraction path.
 - Public website structure can change and may require selector updates.
 - The analyzer uses lightweight heuristics by default and is intentionally explainable rather than sophisticated.
-- JSON files are simple and demo-friendly, but a database would be a better long-term store.
+- JSON files are simple and easy to inspect, but a database would be a better long-term store.
 
 ## Compliance note
 
@@ -240,14 +242,3 @@ It does not attempt:
 - CAPTCHA bypass
 - session reuse or session theft
 - scraping private or protected content
-
-## How to explain this in the interview
-
-“This is a public-content trend monitoring agent built as a practical MVP. I used Playwright for collection, JSON snapshots for memory, heuristic analysis for explainable topic and sentiment tagging, and a simple one-shot CLI so n8n or any scheduler can orchestrate it. I scoped the final implementation around Reddit because it was the most reliable public source to demo end-to-end, while still keeping TikTok isolated as an expansion path.”
-
-Useful talking points:
-
-- I optimized for a complete, runnable system over a broad but fragile scraper.
-- I kept the workflow orchestration outside the collector so the project works equally well with n8n, cron, or manual runs.
-- I used simple JSON storage and heuristic analysis deliberately to keep the MVP easy to inspect and extend.
-- I treated public-only collection as a hard product constraint, not an afterthought.

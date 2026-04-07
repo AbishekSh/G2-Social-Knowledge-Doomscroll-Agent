@@ -24,4 +24,4 @@ Operational notes:
 
 - Keep environment variables in the n8n container or host environment rather than hardcoding them in the workflow.
 - Use `TARGET_PLATFORM=reddit` for the current stable path.
-- TikTok support is scaffolded, but not yet the reliable demo path.
+- TikTok support is present as an extension path, but Reddit is the current stable path.
