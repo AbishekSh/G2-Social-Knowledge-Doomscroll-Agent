@@ -2,7 +2,7 @@
 
 A practical Python agent for monitoring public social content, storing timestamped snapshots, and generating one actionable trend insight per run.
 
-The current production-ready path is Reddit. TikTok remains in the repo as a Playwright scaffold with isolated selector logic for future expansion.
+This submission is implemented as a Reddit-first MVP with a TikTok collector scaffold for future expansion. That keeps the shipped path reliable while still demonstrating a broader social-monitoring design.
 
 ## Project objective
 
@@ -15,16 +15,16 @@ The current production-ready path is Reddit. TikTok remains in the repo as a Pla
 - stores raw and processed snapshots as JSON
 - aggregates recurring themes into one actionable insight
 
-The design is intentionally simple and n8n-friendly.
+The design is intentionally simple, reproducible, and n8n-ready.
 
 ## Why TikTok was chosen
 
-TikTok is a strong fit for trend discovery because creator-driven short-form content tends to surface new workflows, products, and public sentiment quickly. In practice, public TikTok extraction is more brittle than Reddit because page structure and rendering behavior change often, so this repo ships with:
+TikTok is a strong fit for trend discovery because creator-driven short-form content tends to surface new workflows, products, and public sentiment quickly. In practice, public TikTok extraction is much more brittle than Reddit because rendering and selectors change often, so this repo ships with:
 
 - a Reddit implementation that is stable enough for a demo
 - a TikTok collector scaffold that keeps selectors isolated and non-blocking
 
-That tradeoff keeps the submission honest while still showing the intended expansion path.
+That tradeoff keeps the submission honest: the architecture supports both, but the dependable demo path is Reddit.
 
 ## What is collected
 
@@ -160,6 +160,7 @@ Why this is n8n-ready:
 - the collector is not tightly coupled to orchestration
 - `--once` is deterministic and easy to schedule
 - `latest_insight.json` gives n8n one canonical output artifact
+- the same pipeline can be triggered locally, by cron, or by n8n without code changes
 
 ## Sample output JSON
 
@@ -224,7 +225,7 @@ python3 -m pytest -q
 
 ## Limitations
 
-- Reddit is the reliable demo path today; TikTok is still a scaffold.
+- Reddit is the reliable demo path today; TikTok is still a scaffold rather than a completed extraction path.
 - Public website structure can change and may require selector updates.
 - The analyzer uses lightweight heuristics by default and is intentionally explainable rather than sophisticated.
 - JSON files are simple and demo-friendly, but a database would be a better long-term store.
@@ -242,4 +243,11 @@ It does not attempt:
 
 ## How to explain this in the interview
 
-“This is a public-content trend monitoring agent. I used Playwright for collection, JSON snapshots for memory, lightweight heuristics for classification, and a clean one-shot CLI so n8n can schedule it easily. I kept the shipped implementation Reddit-first because it is more reliable for a hiring demo, but I isolated TikTok collection behind a separate scaffold so the architecture still matches the broader social-monitoring goal.”
+“This is a public-content trend monitoring agent built as a practical MVP. I used Playwright for collection, JSON snapshots for memory, heuristic analysis for explainable topic and sentiment tagging, and a simple one-shot CLI so n8n or any scheduler can orchestrate it. I scoped the final implementation around Reddit because it was the most reliable public source to demo end-to-end, while still keeping TikTok isolated as an expansion path.”
+
+Useful talking points:
+
+- I optimized for a complete, runnable system over a broad but fragile scraper.
+- I kept the workflow orchestration outside the collector so the project works equally well with n8n, cron, or manual runs.
+- I used simple JSON storage and heuristic analysis deliberately to keep the MVP easy to inspect and extend.
+- I treated public-only collection as a hard product constraint, not an afterthought.
